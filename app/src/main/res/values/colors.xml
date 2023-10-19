@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="error_red">#FF3333</color>
+    <color name="primary_color">#FF914D</color>
+    <color name="secondary_color">#BBE1C5</color>
+    <color name="backdrop_color">#262626</color>
+    <color name="button_color">#B8B8BE</color>
+    <color name="status_bar_color">#FF000000</color>
+
+</resources>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/backdrop_color">
+
+    <ImageView
+        android:id="@+id/top_login_message"
+        android:layout_width="391dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="11dp"
+        android:src="@drawable/top_login_message">
+
+    </ImageView>
+
+    <EditText
+        android:id="@+id/login_username_et"
+        android:layout_width="330dp"
+        android:layout_height="55dp"
+        android:layout_alignBottom="@id/top_login_message"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="-180dp"
+        android:background="@color/white"
+        android:ems="10"
+        android:hint=" Username"
+        android:inputType="text"
+        android:textSize="20dp"
+        android:paddingLeft="10dp"/>
+
+    <EditText
+        android:id="@+id/login_password_et"
+        android:layout_width="330dp"
+        android:layout_height="55dp"
+        android:layout_alignBottom="@id/login_username_et"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="-74dp"
+        android:background="@color/white"
+        android:ems="10"
+        android:hint=" Password"
+        android:inputType="text"
+        android:textSize="20dp"
+        android:paddingLeft="10dp"/>
+
+    <Button
+        android:id="@+id/login_login_btn"
+        android:layout_width="221dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/login_password_et"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="-84dp"
+        android:backgroundTint="@color/button_color"
+        android:text="LOGIN"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+
+
+</RelativeLayout>

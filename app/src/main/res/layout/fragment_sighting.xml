@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".Sighting">
+
+    <!-- Vertical LinearLayout for content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Bird Name TextView -->
+        <TextView
+            android:id="@+id/birdNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bird Name Placeholder"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_gravity="start" />
+
+        <!-- Location TextView -->
+        <TextView
+            android:id="@+id/locationTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location Placeholder"
+            android:textSize="14sp"
+            android:layout_gravity="start" />
+
+        <!-- Date-Time TextView -->
+        <TextView
+            android:id="@+id/dateTimeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date  Time Placeholder"
+            android:textSize="14sp"
+            android:layout_gravity="start" />
+
+        <!-- ImageView for Image Preview -->
+        <ImageButton
+            android:id="@+id/imagePreviewImageView"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginLeft="150dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/baseline_image_24" />
+    </LinearLayout>
+</FrameLayout>

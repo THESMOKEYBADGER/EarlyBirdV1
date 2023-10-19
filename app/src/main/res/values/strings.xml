@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">EarlyBirdV1</string>
+    <string name="title">EARLYBIRD       </string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="google_maps_api_key">AIzaSyBPhE0_4iZ2k9r93MykN5HyzJjLqavvJ4E</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
