@@ -8,12 +8,27 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
+import com.example.earlybirdv1.BirdSighting;
+
 import java.util.List;
 
 public class SightingAdapter extends RecyclerView.Adapter<SightingAdapter.SightingViewHolder> {
     private Context context;
     private List<BirdSighting> sightings;
+    private OnItemClickListener onItemClickListener;
+
+    public interface OnItemClickListener {
+        void onItemClick(BirdSighting sighting);
+        void onImagePreviewClick(String imageUrl);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
 
     public SightingAdapter(Context context, List<BirdSighting> sightings) {
         this.context = context;
@@ -33,9 +48,9 @@ public class SightingAdapter extends RecyclerView.Adapter<SightingAdapter.Sighti
         holder.birdNameTextView.setText(sighting.getBirdName());
         holder.dateTimeTextView.setText(sighting.getSightingTime());
         holder.nearestRoadTextView.setText(sighting.getNearestRoadName()); // Set nearest road name
-        // Load and display the image for the sighting here.
-        // You can use a library like Glide or Picasso to load and display the image.
-    }
+
+        };
+
 
     @Override
     public int getItemCount() {
@@ -54,6 +69,8 @@ public class SightingAdapter extends RecyclerView.Adapter<SightingAdapter.Sighti
             dateTimeTextView = itemView.findViewById(R.id.dateTimeTextView);
             nearestRoadTextView = itemView.findViewById(R.id.locationTextView); // Use the correct ID
             imagePreviewImageView = itemView.findViewById(R.id.imagePreviewImageView);
+
         }
+
     }
 }

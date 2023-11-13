@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import java.util.UUID;
 
 public class SignupActivity extends AppCompatActivity {
@@ -21,8 +22,6 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-
-        String userId = UUID.randomUUID().toString();
         usernameEditText = findViewById(R.id.signup_username_et);
         emailEditText = findViewById(R.id.signup_email_et);
         passwordEditText = findViewById(R.id.signup_password_et);
@@ -39,15 +38,19 @@ public class SignupActivity extends AppCompatActivity {
                 if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
                     Toast.makeText(SignupActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 } else {
-                    User newUser = new User(username, email, password, userId);
-                    long newRowId = dbHelper.insertUser(newUser);
+                    // Generate a unique user ID (UUID in this case)
+                    String userId = UUID.randomUUID().toString();
 
-                    if (newRowId != -1) {
-                        Toast.makeText(SignupActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
-                        finish();
-                    } else {
-                        Toast.makeText(SignupActivity.this, "Registration failed. Please try again.", Toast.LENGTH_SHORT).show();
-                    }
+                    User newUser = new User(username, email, password, userId);
+
+                    dbHelper.insertUser(newUser, task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(SignupActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
+                            finish();
+                        } else {
+                            Toast.makeText(SignupActivity.this, "Registration failed. Please try again.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         });

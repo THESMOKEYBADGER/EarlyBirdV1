@@ -8,6 +8,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
 public class LoginActivity extends AppCompatActivity {
 
     // Declare UI elements
@@ -42,21 +45,24 @@ public class LoginActivity extends AppCompatActivity {
                 if (enteredUsername.isEmpty() || enteredPassword.isEmpty()) {
                     Toast.makeText(LoginActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Use the database helper to check if the user exists and retrieve the userId
-                    String userId = dbHelper.getUserId(enteredUsername, enteredPassword);
+                    // Use the database helper to check user credentials
+                    dbHelper.checkUserCredentials(enteredUsername, enteredPassword, new OnCompleteListener<Boolean>() {
+                        @Override
+                        public void onComplete(Task<Boolean> task) {
+                            if (task.isSuccessful() && task.getResult() != null && task.getResult()) {
+                                // Credentials are correct, redirect to HomePageActivity and pass the userId
+                                Intent intent = new Intent(LoginActivity.this, HomePageActivity.class);
+                                intent.putExtra("userId", dbHelper.getCurrentUserId()); // Pass the userId
+                                startActivity(intent);
 
-                    if (userId != null) {
-                        // Credentials are correct, redirect to HomePageActivity and pass the userId
-                        Intent intent = new Intent(LoginActivity.this, HomePageActivity.class);
-                        intent.putExtra("userId", userId); // Pass the userId
-                        startActivity(intent);
-
-                        // Finish the LoginActivity to prevent going back to it with the back button
-                        finish();
-                    } else {
-                        // Credentials are incorrect, display a Toast message
-                        Toast.makeText(LoginActivity.this, "Incorrect username or password", Toast.LENGTH_SHORT).show();
-                    }
+                                // Finish the LoginActivity to prevent going back to it with the back button
+                                finish();
+                            } else {
+                                // Credentials are incorrect, display a Toast message
+                                Toast.makeText(LoginActivity.this, "Incorrect username or password", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                 }
             }
         });
