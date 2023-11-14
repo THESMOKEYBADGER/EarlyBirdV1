@@ -8,11 +8,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
-import com.example.earlybirdv1.BirdSighting;
 
 import java.util.List;
 
@@ -20,6 +17,7 @@ public class SightingAdapter extends RecyclerView.Adapter<SightingAdapter.Sighti
     private Context context;
     private List<BirdSighting> sightings;
     private OnItemClickListener onItemClickListener;
+    private BirdSighting selectedSighting; // Add a member variable to store the selected sighting
 
     public interface OnItemClickListener {
         void onItemClick(BirdSighting sighting);
@@ -49,12 +47,41 @@ public class SightingAdapter extends RecyclerView.Adapter<SightingAdapter.Sighti
         holder.dateTimeTextView.setText(sighting.getSightingTime());
         holder.nearestRoadTextView.setText(sighting.getNearestRoadName()); // Set nearest road name
 
-        };
+        // Load image using Glide
+        Glide.with(context)
+                .load(sighting.getPhotoPath())
+                .placeholder(R.drawable.placeholder_image) // Use a placeholder image if needed
+                .into(holder.imagePreviewImageView);
 
+        // Set click listeners
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemClick(sighting);
+                    selectedSighting = sighting; // Update the selected sighting
+                }
+            }
+        });
+
+        holder.imagePreviewImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onItemClickListener != null) {
+                    onItemClickListener.onImagePreviewClick(sighting.getPhotoPath());
+                    selectedSighting = sighting; // Update the selected sighting
+                }
+            }
+        });
+    }
 
     @Override
     public int getItemCount() {
         return sightings.size();
+    }
+
+    public BirdSighting getSelectedSighting() {
+        return selectedSighting;
     }
 
     static class SightingViewHolder extends RecyclerView.ViewHolder {
@@ -69,8 +96,7 @@ public class SightingAdapter extends RecyclerView.Adapter<SightingAdapter.Sighti
             dateTimeTextView = itemView.findViewById(R.id.dateTimeTextView);
             nearestRoadTextView = itemView.findViewById(R.id.locationTextView); // Use the correct ID
             imagePreviewImageView = itemView.findViewById(R.id.imagePreviewImageView);
-
         }
-
     }
 }
+

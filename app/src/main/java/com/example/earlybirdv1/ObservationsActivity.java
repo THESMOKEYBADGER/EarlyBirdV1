@@ -6,20 +6,21 @@ import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-
+import android.content.Intent;
+import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
 public class ObservationsActivity extends AppCompatActivity {
+    private static final int REQUEST_OPEN_DOCUMENT = 2;
+
     private RecyclerView recyclerView;
     private SightingAdapter sightingAdapter;
     private String userId;  // Add a member variable to store the userId
@@ -56,9 +57,8 @@ public class ObservationsActivity extends AppCompatActivity {
 
                         @Override
                         public void onImagePreviewClick(String imageUrl) {
-                            // Handle click on the image preview
-                            // You can show a bottom sheet dialog with the image here
-                            showImageBottomSheetDialog(imageUrl);
+                            // Open the document using ACTION_OPEN_DOCUMENT
+                            openDocument(imageUrl);
                         }
                     });
                 } else {
@@ -95,14 +95,26 @@ public class ObservationsActivity extends AppCompatActivity {
         }
     }
 
-    public void onButton1Click(View view) {
-        Intent intent = new Intent(this, HomePageActivity.class);
-        intent.putExtra("userId", userId);
-        startActivity(intent);
+    private void openDocument(String imageUrl) {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        startActivityForResult(intent, REQUEST_OPEN_DOCUMENT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_OPEN_DOCUMENT && resultCode == RESULT_OK) {
+            if (data != null && data.getData() != null) {
+                String selectedImageUri = data.getData().toString();
+                showImageBottomSheetDialog(selectedImageUri);
+            }
+        }
     }
 
     private void showImageBottomSheetDialog(String imageUrl) {
-        // Implement the logic to show a bottom sheet dialog with the image preview here
-        // You can use a BottomSheetDialogFragment for this purpose
+        ImagePreviewBottomSheetFragment bottomSheetFragment = new ImagePreviewBottomSheetFragment(imageUrl);
+        bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
     }
 }

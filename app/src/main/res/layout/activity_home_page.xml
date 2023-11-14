@@ -50,7 +50,7 @@
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/metricsButton"
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_weight="1"
