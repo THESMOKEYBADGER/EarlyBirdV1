@@ -1,5 +1,6 @@
 package com.example.earlybirdv1;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -114,6 +115,10 @@ public class HomePageActivity extends FragmentActivity implements OnMapReadyCall
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 sliderValue.setText(progress + " km");
+                if (currentLocation != null) {
+                    // Fetch and plot bird data after the user stops moving the slider
+                    fetchBirdDataAndPlotPoints(slider.getProgress(), currentLocation.getLatitude(), currentLocation.getLongitude());
+                }
             }
 
             @Override
@@ -124,10 +129,6 @@ public class HomePageActivity extends FragmentActivity implements OnMapReadyCall
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 // Handle when the user stops moving the slider
-                if (currentLocation != null) {
-                    // Fetch and plot bird data after the user stops moving the slider
-                    fetchBirdDataAndPlotPoints(slider.getProgress(), currentLocation.getLatitude(), currentLocation.getLongitude());
-                }
             }
         });
 
@@ -227,7 +228,7 @@ public class HomePageActivity extends FragmentActivity implements OnMapReadyCall
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(observationLocation)
                     .title(observation.getBirdName())  // Assuming birdName is stored in the BirdSighting class
-                    .snippet("Observation Details")  // Add relevant details here
+                    .snippet(observation.getSightingTime())  // Add relevant details here
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));  // Set marker color to orange
             Marker observationMarker = mMap.addMarker(markerOptions);
             // Customize the marker further if needed
@@ -289,6 +290,7 @@ public class HomePageActivity extends FragmentActivity implements OnMapReadyCall
         }
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @SuppressLint("PotentialBehaviorOverride")
             @Override
             public boolean onMarkerClick(Marker marker) {
                 if (selectedMarker != null && selectedMarker.equals(marker)) {
