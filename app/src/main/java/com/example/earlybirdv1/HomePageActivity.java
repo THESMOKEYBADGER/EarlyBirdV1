@@ -47,6 +47,7 @@ import com.google.maps.model.TravelMode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class HomePageActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -64,9 +65,13 @@ public class HomePageActivity extends FragmentActivity implements OnMapReadyCall
     private static final String PREFS_NAME = "MyPrefs";
     private static final String NOTIFICATION_SHOWN = "notificationShown";
 
+    private boolean isMetricUnit = true;
+
     public HomePageActivity() {
         // Default constructor
     }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +134,22 @@ public class HomePageActivity extends FragmentActivity implements OnMapReadyCall
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 // Handle when the user stops moving the slider
+            }
+        });
+
+        Button metricsButton = findViewById(R.id.metricsButton);
+
+        metricsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Toggle between metric and imperial units
+                isMetricUnit = !isMetricUnit;
+
+                // Update the slider value
+                updateSliderValue();
+
+                // Fetch and plot bird data with the updated distance and unit
+                fetchBirdDataAndPlotPoints(slider.getProgress(), currentLocation.getLatitude(), currentLocation.getLongitude());
             }
         });
 
@@ -270,10 +291,12 @@ public class HomePageActivity extends FragmentActivity implements OnMapReadyCall
     }
 
     private void updateLocationInURL(double lat, double lng) {
-        String updatedUrl = "https://api.ebird.org/v2/ref/hotspot/geo?lat=" + lat + "&lng=" + lng + "&dist=" + slider.getProgress();
+        String unit = isMetricUnit ? "km" : "mi";
+        String updatedUrl = "https://api.ebird.org/v2/ref/hotspot/geo?lat=" + lat + "&lng=" + lng + "&dist=" + slider.getProgress() + "&unit=" + unit;
         Log.d("MyApp", "Updated URL: " + updatedUrl);
     }
 
+    @SuppressLint("PotentialBehaviorOverride")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -294,28 +317,11 @@ public class HomePageActivity extends FragmentActivity implements OnMapReadyCall
             @Override
             public boolean onMarkerClick(Marker marker) {
                 if (selectedMarker != null && selectedMarker.equals(marker)) {
-                    marker.hideInfoWindow();
                     // The same marker was clicked again, hide the route and show all markers
-                    selectedMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                    selectedMarker = null;
-                    if (currentRoute != null) {
-                        currentRoute.remove();
-                        currentRoute = null;
-                    }
-
-                    showAllMarkers();
-
+                    hideRouteAndResetMarkers();
                 } else {
-                    if (selectedMarker != null) {
-                        // Another marker was previously selected, hide it and its route
-                        selectedMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                        selectedMarker = null;
-                        if (currentRoute != null) {
-                            currentRoute.remove();
-                            currentRoute = null;
-                        }
-                        marker.hideInfoWindow();
-                    }
+                    // Another marker was previously selected, hide it and its route
+                    hideRouteAndResetMarkers();
 
                     // Show the route to the selected marker
                     selectedMarker = marker;
@@ -372,9 +378,12 @@ public class HomePageActivity extends FragmentActivity implements OnMapReadyCall
     // Add a new method to handle the result
     private void handleDirectionsResult(DirectionsResult result) {
         if (result != null && result.routes != null && result.routes.length > 0) {
-            String distanceText = result.routes[0].legs[0].distance.humanReadable;
-            String durationText = result.routes[0].legs[0].duration.humanReadable;
+            double distanceValue = result.routes[0].legs[0].distance.inMeters; // Distance in meters
+            double durationValue = result.routes[0].legs[0].duration.inSeconds; // Duration in seconds
 
+            // Convert distance and duration to the selected unit
+            String distanceText = formatDistance(distanceValue);
+            String durationText = formatDuration(durationValue);
 
             List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(result.routes[0].overviewPolyline.getEncodedPath());
             List<LatLng> androidLatLngs = new ArrayList<>();
@@ -389,7 +398,6 @@ public class HomePageActivity extends FragmentActivity implements OnMapReadyCall
                         .width(10)
                         .color(Color.BLUE));
                 Toast.makeText(this, "Distance: " + distanceText + "\nDuration: " + durationText, Toast.LENGTH_LONG).show();
-
             });
         } else {
             // Handle the case where no routes are found
@@ -425,5 +433,56 @@ public class HomePageActivity extends FragmentActivity implements OnMapReadyCall
                 Toast.makeText(this, "Location permission is denied, please allow the permission", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void updateSliderValue() {
+        // Update the slider value based on the selected unit
+        if (isMetricUnit) {
+            slider.setMax(50);
+            sliderValue.setText(slider.getProgress() + " km");
+        } else {
+            // Assuming 1 km is approximately 0.621371 miles
+            slider.setMax((int) (50 / 0.621371));
+            sliderValue.setText(slider.getProgress() + " mi");
+        }
+    }
+
+    // Method to format distance based on selected unit
+    private String formatDistance(double distanceInMeters) {
+        if (isMetricUnit) {
+            // Convert meters to kilometers
+            double distanceInKm = distanceInMeters / 1000.0;
+            return String.format(Locale.getDefault(), "%.2f km", distanceInKm);
+        } else {
+            // Convert meters to miles
+            double distanceInMiles = distanceInMeters * 0.000621371;
+            return String.format(Locale.getDefault(), "%.2f mi", distanceInMiles);
+        }
+    }
+
+    // Method to format duration based on selected unit
+    private String formatDuration(double durationInSeconds) {
+        if (isMetricUnit) {
+            // Convert seconds to minutes
+            double durationInMinutes = durationInSeconds / 60.0;
+            return String.format(Locale.getDefault(), "%.2f min", durationInMinutes);
+        } else {
+            // Convert seconds to hours
+            double durationInHours = durationInSeconds / 3600.0;
+            return String.format(Locale.getDefault(), "%.2f hr", durationInHours);
+        }
+    }
+
+    // Helper method to hide the route and reset markers
+    private void hideRouteAndResetMarkers() {
+        if (selectedMarker != null) {
+            selectedMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            selectedMarker = null;
+        }
+        if (currentRoute != null) {
+            currentRoute.remove();
+            currentRoute = null;
+        }
+        showAllMarkers();
     }
 }
