@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "711783517830",
+    "project_id": "earlybirdv1",
+    "storage_bucket": "earlybirdv1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:711783517830:android:45f2c83decc848fa91cb07",
+        "android_client_info": {
+          "package_name": "com.example.earlybirdv1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2_vmXdSQ5WoeJFVvv8UkBiPyM8EVXsBw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
